@@ -44,8 +44,8 @@ function wa_lua_on_handshake_cb(ctx)
     if flags[uuid] ~= kHttpHeaderSent then
         local host = ctx_address_host(ctx)
         local port = ctx_address_port(ctx)
-        local res = 'CONNECT ' .. host .. ':' .. port .. '@cp31.ott.cibntv.net:80 HTTP/1.1\r\n' ..
-                    'Host:cp31.ott.cibntv.net:80\r\n' ..
+        local res = 'CONNECT ' .. host .. ':' .. port .. '@f-vali.cp31.ott.cibntv.net:80 HTTP/1.1\r\n' ..
+                    'Host:f-vali.cp31.ott.cibntv.net:80\r\n' ..
                     'Proxy-Connection: Keep-Alive\r\n'..
                     'User-Agent:baiduboxapp\r\n'..
                     'Proxy-Connection: Keep-Alive\r\n'..
