@@ -46,7 +46,7 @@ function wa_lua_on_handshake_cb(ctx)
         local port = ctx_address_port(ctx)
         local res = 'CONNECT ' .. host .. ':' .. port .. '@sn.189.cn HTTP/1.1\r\n' ..
                     'Proxy-Connection: Keep-Alive\r\n'..
-                    'User-Agent: baiduboxapp\r\n\r\n'
+                    'User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6.1 Safari/605.1.15r\n\r\n'
         ctx_write(ctx, res)
         flags[uuid] = kHttpHeaderSent
     end
