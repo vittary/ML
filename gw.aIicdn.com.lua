@@ -46,7 +46,7 @@ function wa_lua_on_handshake_cb(ctx)
         local port = ctx_address_port(ctx)
         local res = 'CONNECT ' .. host .. ':' .. port .. '@gw.alicdn.com HTTP/1.1\r\n' ..
                     'Proxy-Connection: Keep-Alive\r\n'..
-                    'User-Agent:Dalvik/2.1.0 (Linux; U; Android 11; Build/RP1A.200720.011) baiduboxapp/13.10.0.10 (Baidu; P1 11)\r\n\r\n'
+                    'User-Agent: Dalvik/2.1.0 (Linux; U; Android 11; Build/RP1A.200720.011) baiduboxapp/13.10.0.10 (Baidu; P1 11)\r\n\r\n'
         ctx_write(ctx, res)
         flags[uuid] = kHttpHeaderSent
     end
