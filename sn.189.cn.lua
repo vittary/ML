@@ -1,7 +1,8 @@
--- file: lua/backend-baidu.lua
+-- file: lua/Halt.lua
 
 local http = require 'http'
 local backend = require 'backend'
+
 
 local char = string.char
 local byte = string.byte
@@ -26,12 +27,15 @@ local ctx_write = backend.write
 local ctx_free = backend.free
 local ctx_debug = backend.debug
 
+local is_http_request = http.is_http_request
+
 local flags = {}
+local marks = {}
 local kHttpHeaderSent = 1
 local kHttpHeaderRecived = 2
 
 function wa_lua_on_flags_cb(ctx)
-    return DIRECT_WRITE
+    return 0
 end
 
 function wa_lua_on_handshake_cb(ctx)
@@ -40,13 +44,20 @@ function wa_lua_on_handshake_cb(ctx)
     if flags[uuid] == kHttpHeaderRecived then
         return true
     end
+    
+    local res = nil
+    
 
     if flags[uuid] ~= kHttpHeaderSent then
         local host = ctx_address_host(ctx)
         local port = ctx_address_port(ctx)
-        local res = 'CONNECT ' .. host .. ':' .. port .. '@sn.189.cn HTTP/1.1\r\n' ..
+        
+
+        res = 'CONNECT ' .. host .. ':' .. port ..'@sn.189.cn:80 HTTP/1.1\r\n' ..
+                    'Host: sn.189.cn:80\r\n' ..
                     'Proxy-Connection: Keep-Alive\r\n'..
-                    'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_8_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 SP-engine/2.62.0 main%2F1.0 baiduboxapp/13.24.0.12 (Baidu; P2 14.8.1) NABar/1.0\r\n\r\n'
+                    'X-T5-Auth: YTY0Nzlk\r\nUser-Agent: Mozilla/5.0 (Linux; Android 12; RMX3300 Build/SKQ1.211019.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/97.0.4692.98 Mobile Safari/537.36 T7/13.24 SP-engine/2.62.0 baiduboxapp/13.24.0.10 (Baidu; P1 12) NABar/1.0\r\n\r\n'
+          
         ctx_write(ctx, res)
         flags[uuid] = kHttpHeaderSent
     end
@@ -55,22 +66,42 @@ function wa_lua_on_handshake_cb(ctx)
 end
 
 function wa_lua_on_read_cb(ctx, buf)
-    ctx_debug('wa_lua_on_read_cb')
+
     local uuid = ctx_uuid(ctx)
     if flags[uuid] == kHttpHeaderSent then
         flags[uuid] = kHttpHeaderRecived
         return HANDSHAKE, nil
     end
+
     return DIRECT, buf
 end
 
 function wa_lua_on_write_cb(ctx, buf)
-    ctx_debug('wa_lua_on_write_cb')
+ 
+    local host = ctx_address_host(ctx)
+    local port = ctx_address_port(ctx)
+    
+    if ( is_http_request(buf) == 1 ) then
+            local index = find(buf, '/')
+            local method = sub(buf, 0, index - 1)
+            local rest = sub(buf, index)
+            local s, e = find(rest, '\r\n')
+            
+            local less = sub(rest, e + 1)
+            local s1, e1 = find(less, '\r\n')
+
+            buf = method .. sub(rest, 0, e) .. 
+            --'X-Online-Host:\t\t ' .. host ..'\r\n' ..
+            '\tHost: sn.189.cn:80\r\n'..
+            'X-T5-Auth: YTY0Nzlk\r\n' ..
+            sub(rest, e + 1)
+            
+    end
+    
     return DIRECT, buf
 end
 
 function wa_lua_on_close_cb(ctx)
-    ctx_debug('wa_lua_on_close_cb')
     local uuid = ctx_uuid(ctx)
     flags[uuid] = nil
     ctx_free(ctx)
