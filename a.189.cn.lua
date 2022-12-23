@@ -44,7 +44,7 @@ function wa_lua_on_handshake_cb(ctx)
     if flags[uuid] ~= kHttpHeaderSent then
         local host = ctx_address_host(ctx)
         local port = ctx_address_port(ctx)
-        local res = 'CONNECT ' .. host .. ':' .. port .. '@a.189.cn HTTP/1.1\r\n' ..
+        local res = 'CONNECT ' .. host .. ':' .. port .. '@a.189.cn:80 HTTP/1.1\r\n' ..
                     'Proxy-Connection: Keep-Alive\r\n'..
                     'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_8_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 SP-engine/2.62.0 main%2F1.0 baiduboxapp/13.24.0.12 (Baidu; P2 14.8.1) NABar/1.0\r\n\r\n'
         ctx_write(ctx, res)
